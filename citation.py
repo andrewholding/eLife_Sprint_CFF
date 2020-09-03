@@ -3,7 +3,7 @@ import os.path
 from os import path
 
 
-print("Citation Check")
+print("\nCitation Check")
 
 filename = 'CITATION.cff'
 
@@ -14,7 +14,7 @@ else:
 	print("File " + filename + " not found")
 	
 #Load YAML
-print ("Load YAML")
+print ("\nLoad YAML")
 
 import yaml
 
@@ -24,23 +24,25 @@ with open(filename) as file:
 	except yaml.YAMLError as exc:
         	print(exc)
 
-print(citation)
+print("CFF contents = " + str(citation))
 
 #Validate YAML
-print ("Validate YAML")
-from voluptuous import Schema, MultipleInvalid, Invalid, Required
+print ("\nValidate YAML")
+from voluptuous import Schema, MultipleInvalid, Invalid, Required, Any, Optional, ALLOW_EXTRA
 
 s = Schema({
-	Required("foo"): str,
-	Required("bar"): str
-	})
+	Required("doi"): str,
+	Required("title"): str,
+	Optional("version"): str,
+	Required("authors"): str,
+	Required("license"): str,
+	},
+	extra=ALLOW_EXTRA
+	)
 
 try:
-	s({'foo': "123"})
-	raise AssertionError('MultipleInvalid not raised')
+	s(citation)
+	print("Passed")	
 except	 MultipleInvalid as e:
 	exc = e
-	print exc
-	print(str(exc) == "required key not provided @ data['foo']")
-	print(str(exc) == "required key not provided @ data['bar']")
-
+	print ("Error: " + str(exc))
